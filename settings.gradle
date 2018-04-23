@@ -1,0 +1,2 @@
+include ':sample-android', ':asmbutterknife-plugin', ':asmbutterknife-annotations', ':sample-java'
+rootProject.name = 'AsmButterknife-root'
