@@ -1,49 +1,99 @@
 package com.whyn.asm.adapters.inject;
 
-import android.support.annotation.NonNull;
-
-import com.whyn.asm.adapters.base.BaseMethodVisitor;
-import com.whyn.bean.BindViewBean;
-import com.whyn.bean.ViewInjectBean;
+import com.whyn.bean.ViewInjectClassRecorder;
+import com.whyn.bean.element.AnnotationBean;
+import com.whyn.bean.element.FieldBean;
+import com.whyn.bean.element.MethodBean;
 import com.whyn.utils.Log;
+import com.whyn.utils.bean.Tuple;
 
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.AnnotationNode;
 
-import java.util.Set;
+import java.util.List;
 
-import static org.objectweb.asm.Opcodes.ALOAD;
-import static org.objectweb.asm.Opcodes.CHECKCAST;
-import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
-import static org.objectweb.asm.Opcodes.PUTFIELD;
+public class InjectActivityMethodAdapter extends MethodViewInjection {
 
-public class InjectActivityMethodAdapter extends BaseMethodVisitor {
+    //    private ViewInjectBean mViewInjectBean;
+//    private MethodBean mMethodBean;
+//    private AnnotationBean mAnnotationBean;
 
-    private ViewInjectBean mViewInjectBean;
+    public InjectActivityMethodAdapter(MethodVisitor mv, int access, String name, String desc, int viewInjectType) {
+        super(mv, access, name, desc, viewInjectType);
+//        this.mViewInjectBean = viewInjectBean;
+//        this.mMethodBean = viewInjectDeatil.first;
+//        this.mAnnotationBean = viewInjectDeatil.second;
+    }
 
-    public InjectActivityMethodAdapter(MethodVisitor mv, @NonNull ViewInjectBean viewInjectBean) {
-        super(mv);
-        this.mViewInjectBean = viewInjectBean;
+//    @Override
+//    public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
+//        super.visitMethodInsn(opcode, owner, name, desc, itf);
+//        if ("setContentView".equals(name) && "(I)V".equals(desc)) {
+//            Log.v("enter setContentView,begin to inject findViewById");
+////            Set<BindViewBean> beans = this.mViewInjectBean.getBindViewBeans();
+//            List<Tuple<FieldBean, AnnotationBean>> bindViewDetail = ViewInjectClassRecorder.getInstance().getBindViewDetail();
+//            for (Tuple<FieldBean, AnnotationBean> detail : bindViewDetail) {
+//                FieldBean field = detail.first;
+//                AnnotationBean annotation = detail.second;
+//                int id = (int) annotation.getValue();
+//                if (id == -1)
+//                    continue;
+//                mv.visitVarInsn(ALOAD, 0);
+//                mv.visitVarInsn(ALOAD, 0);
+//                mv.visitLdcInsn(new Integer(id));
+////                mv.visitMethodInsn(INVOKEVIRTUAL, "com/yn/asmbutterknife/TestActivity", "findViewById", "(I)Landroid/view/View;", false);
+//                String ownerInternalName = ViewInjectClassRecorder.getInstance().getInternalName();
+//                mv.visitMethodInsn(INVOKEVIRTUAL,
+//                        ownerInternalName,
+//                        "findViewById",
+//                        "(I)Landroid/view/View;",
+//                        false);
+////                mv.visitTypeInsn(CHECKCAST, "android/widget/TextView");
+//                mv.visitTypeInsn(CHECKCAST, Type.getType(field.desc).getInternalName());
+////                mv.visitFieldInsn(PUTFIELD, "com/yn/asmbutterknife/TestActivity", "tv", "Landroid/widget/TextView;");
+//                mv.visitFieldInsn(PUTFIELD, ownerInternalName, field.name, field.desc);
+//
+//            }
+//
+//        }
+//    }
+
+    @Override
+    protected String dstInjectMethodName() {
+        return "onCreate";
     }
 
     @Override
-    public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
-        super.visitMethodInsn(opcode, owner, name, desc, itf);
-        if ("setContentView".equals(name) && "(I)V".equals(desc)) {
-            Log.v("enter setContentView,begin to inject findViewById");
-            Set<BindViewBean> beans = this.mViewInjectBean.getBindViewBeans();
-            for (BindViewBean bean : beans) {
-                mv.visitVarInsn(ALOAD, 0);
-                mv.visitVarInsn(ALOAD, 0);
-                mv.visitLdcInsn(new Integer(bean.getId()));
-//                mv.visitMethodInsn(INVOKEVIRTUAL, "com/yn/asmbutterknife/TestActivity", "findViewById", "(I)Landroid/view/View;", false);
-                mv.visitMethodInsn(INVOKEVIRTUAL, this.mViewInjectBean.getInternalClassName(), "findViewById", "(I)Landroid/view/View;", false);
-//                mv.visitTypeInsn(CHECKCAST, "android/widget/TextView");
-                mv.visitTypeInsn(CHECKCAST, Type.getType(bean.getDesc()).getInternalName());
-//                mv.visitFieldInsn(PUTFIELD, "com/yn/asmbutterknife/TestActivity", "tv", "Landroid/widget/TextView;");
-                mv.visitFieldInsn(PUTFIELD, this.mViewInjectBean.getInternalClassName(), bean.getName(), bean.getDesc());
+    protected String dstInjectMethodDesc() {
+        return "(Landroid/os/Bundle;)V";
+    }
 
-            }
+    @Override
+    protected void inject() {
+        Log.v("enter setContentView,begin to inject findViewById");
+//            Set<BindViewBean> beans = this.mViewInjectBean.getBindViewBeans();
+        List<Tuple<FieldBean, AnnotationBean>> bindViewDetail = ViewInjectClassRecorder.getInstance().getBindViewDetail();
+        for (Tuple<FieldBean, AnnotationBean> detail : bindViewDetail) {
+            FieldBean field = detail.first;
+            AnnotationBean annotation = detail.second;
+            int id = (int) annotation.getValue();
+            if (id == -1)
+                continue;
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitLdcInsn(new Integer(id));
+//                mv.visitMethodInsn(INVOKEVIRTUAL, "com/yn/asmbutterknife/TestActivity", "findViewById", "(I)Landroid/view/View;", false);
+            String ownerInternalName = ViewInjectClassRecorder.getInstance().getInternalName();
+            mv.visitMethodInsn(INVOKEVIRTUAL,
+                    ownerInternalName,
+                    "findViewById",
+                    "(I)Landroid/view/View;",
+                    false);
+//                mv.visitTypeInsn(CHECKCAST, "android/widget/TextView");
+            mv.visitTypeInsn(CHECKCAST, Type.getType(field.desc).getInternalName());
+//                mv.visitFieldInsn(PUTFIELD, "com/yn/asmbutterknife/TestActivity", "tv", "Landroid/widget/TextView;");
+            mv.visitFieldInsn(PUTFIELD, ownerInternalName, field.name, field.desc);
 
         }
     }

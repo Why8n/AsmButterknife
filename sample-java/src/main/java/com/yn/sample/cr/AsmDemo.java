@@ -1,8 +1,8 @@
 package com.yn.sample.cr;
 
 
-import com.yn.annotations.BindView;
-import com.yn.annotations.ViewInject;
+import com.yn.asmbutterknife.annotations.BindView;
+import com.yn.asmbutterknife.annotations.Test;
 
 import org.objectweb.asm.ClassReader;
 
@@ -10,13 +10,15 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-@ViewInject
 public class AsmDemo {
     private String before;
 
     public static void main(String[] args) throws IOException {
         ClassReader cr = new ClassReader(AsmDemo.class.getName());
         cr.accept(new AsmClassVisitor(), ClassReader.SKIP_DEBUG);
+    }
+
+    public void testArgument(@Test int a, @Test String b, @Test int[] c) {
     }
 
     class TestInner extends AsmDemo {

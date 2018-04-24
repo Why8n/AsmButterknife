@@ -4,6 +4,7 @@ import com.android.annotations.NonNull;
 import com.whyn.define.AndroidType;
 
 import org.apache.commons.io.IOUtils;
+import org.codehaus.groovy.ast.expr.CastExpression;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,7 +35,7 @@ public final class Utils {
         }
     }
 
-    public static void close(InputStream is) {
+    private static void close(InputStream is) {
         try {
             if (is != null)
                 is.close();
@@ -68,7 +69,7 @@ public final class Utils {
         boolean bRet = false;
         Class<?> srcSuperClass = srcTypeCls;
         while (srcSuperClass != null) {
-            Log.v("isSubType: type=%s",srcSuperClass.getName());
+            Log.v("isSubType: type=%s", srcSuperClass.getName());
             if (bRet = dstType.equals(srcSuperClass.getName()))
                 break;
             srcSuperClass = srcSuperClass.getSuperclass();
@@ -94,6 +95,17 @@ public final class Utils {
             e.printStackTrace();
         }
         return bRet;
+    }
+
+    public static void checkNotNull(final Object target, String errorMsg, Object... args) {
+        if (target == null)
+            throw new IllegalArgumentException(String.format(errorMsg, args));
+    }
+
+    public static <T> T getProperValue(Object value, T defaultValue) {
+        if (value == null)
+            value = defaultValue;
+        return (T) value;
     }
 
 }

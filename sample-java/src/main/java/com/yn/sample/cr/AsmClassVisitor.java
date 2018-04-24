@@ -10,6 +10,7 @@ import org.objectweb.asm.Type;
 
 
 import java.rmi.AccessException;
+import java.util.Arrays;
 
 import static com.yn.sample.cr.AsmDemo.sop;
 
@@ -55,7 +56,10 @@ class AsmClassVisitor extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
 //        access=1,name=<init>,descriptor=()V,signature=null,exception=null
         sop("visitMethod:access=%d,name=%s,descriptor=%s,signature=%s,exception=%s", access, name, descriptor, signature, exceptions);
-        return super.visitMethod(access, name, descriptor, signature, exceptions);
+        Type[] argsType = Type.getArgumentTypes(descriptor);
+        Utils.sop("args:%s", Arrays.toString(argsType));
+        MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
+        return new AsmMethodVisitor(mv);
     }
 
     @Override
