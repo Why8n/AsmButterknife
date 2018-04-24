@@ -2,10 +2,12 @@ package com.whyn.asm;
 
 import com.whyn.asm.adapters.collect.CollectionClassAdapter;
 import com.whyn.asm.adapters.inject.ViewInjectClassAdapter;
-import com.whyn.bean.ViewInjectBean;
-import com.whyn.utils.Log;
+import com.whyn.bean.Tuple;
+import com.whyn.bean.ViewInjectClassRecorder;
+import com.whyn.bean.element.AnnotationBean;
+import com.whyn.bean.element.MethodBean;
 import com.whyn.utils.Utils;
-import com.yn.annotations.ViewInject;
+import com.yn.asmbutterknife.annotations.ViewInject;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -21,35 +23,33 @@ import java.io.PrintWriter;
 
 public class ClassScanner {
     private File mClassFile;
-    private ViewInjectBean mViewInjectBean;
+    //    private ViewInjectBean mViewInjectBean;
+    private byte[] mClassByteCode;
 
     public ClassScanner(File classFile) {
         this.mClassFile = classFile;
     }
 
     public ClassScanner scan() throws IOException {
-        byte[] bytes = Utils.file2bytes(new FileInputStream(this.mClassFile));
-        this.mViewInjectBean = new ViewInjectBean(bytes);
-        ClassReader classReader = new ClassReader(bytes);
-//        this.mClassWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS);
-//        ViewInjectClassAdapter viewInjectClassAdapter = new ViewInjectClassAdapter(this.mClassWriter, this.mViewInjectBean);
-//        classReader.accept(viewInjectClassAdapter, ClassReader.EXPAND_FRAMES);
-        classReader.accept(new CollectionClassAdapter(this.mViewInjectBean), ClassReader.SKIP_DEBUG);
+        this.mClassByteCode = Utils.file2bytes(new FileInputStream(this.mClassFile));
+        ClassReader classReader = new ClassReader(this.mClassByteCode);
+        classReader.accept(new CollectionClassAdapter(), ClassReader.SKIP_DEBUG);
         return this;
     }
 
     private byte[] inject() {
-        ClassReader classReader = new ClassReader(this.mViewInjectBean.getByteCode());
+        ClassReader classReader = new ClassReader(this.mClassByteCode);
         ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS);
         ClassVisitor cv = new TraceClassVisitor(classWriter, new PrintWriter(System.out));
-        cv = new ViewInjectClassAdapter(cv, this.mViewInjectBean);
+        cv = new ViewInjectClassAdapter(cv);
         classReader.accept(cv, ClassReader.EXPAND_FRAMES);
         return classWriter.toByteArray();
     }
 
     public boolean write2File() {
-        Log.v("enter write2File:whichView=%d", this.mViewInjectBean.getWhichView());
-        if (this.mViewInjectBean.getWhichView() == ViewInject.NONE)
+        Tuple<MethodBean, AnnotationBean> viewInjectDetail = ViewInjectClassRecorder.getInstance().getViewInjectDetail();
+        if (viewInjectDetail == null
+                || Utils.<Integer>getProperValue(viewInjectDetail.second.getValue(), ViewInject.NONE).intValue() == ViewInject.NONE)
             return false;
         boolean bRet = false;
         FileOutputStream fos = null;

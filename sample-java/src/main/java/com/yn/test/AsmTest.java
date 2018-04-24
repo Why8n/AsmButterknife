@@ -28,7 +28,6 @@ public class AsmTest {
         FileOutputStream fos = new FileOutputStream(file);
         fos.write(classFile);
         fos.close();
-
     }
 
     private static class TestClassVisitor extends ClassVisitor {
@@ -43,9 +42,9 @@ public class AsmTest {
                                          String[] exceptions) {
             System.out.println("visitMethod: " + name);
             MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
-            if ("main".equals(name)) {
-                mv = new MainMethodVisitor(mv);
-//                mv = new MainMethodAdapter(mv,access,name,desc);
+            if ("<init>".equals(name)) {
+//                mv = new MainMethodVisitor(mv);
+                mv = new MainMethodAdapter(mv,access,name,desc);
             }
             return mv;
         }

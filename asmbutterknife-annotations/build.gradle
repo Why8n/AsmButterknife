@@ -16,3 +16,36 @@ dependencies {
 
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
+
+
+apply plugin: 'maven-publish'
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier "sources"
+    //adding a suffix(the generated jar file end up with sources,such as asmbutterknife.1.0-sources.jar)
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+//
+            groupId 'com.whyn'
+            artifactId 'asmbutterknife-annotations'
+            version '1.0.0'
+
+            from components.java
+
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            // change to point to your repo, e.g. http://my.org/repo
+            url uri('E:/code/Android/repos')
+        }
+    }
+}
+

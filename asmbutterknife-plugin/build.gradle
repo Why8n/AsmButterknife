@@ -1,11 +1,14 @@
 //apply plugin: 'java'
 apply plugin: 'groovy'
 //apply plugin: 'maven'
-//
-//repositories {
-//    jcenter()
-//    mavenCentral()
-//}
+
+repositories {
+    jcenter()
+    mavenCentral()
+    maven {//local maven repo path
+        url uri('E:/code/Android/repos')
+    }
+}
 
 def logger = new com.android.build.gradle.internal.LoggerWrapper(project.logger)
 def sdkHandler = new com.android.build.gradle.internal.SdkHandler(project, logger)
@@ -24,17 +27,25 @@ dependencies {
     implementation 'com.android.tools.build:gradle:3.1.1'
 //    implementation project(path: ':asmbutterknife-annotations')
     implementation 'com.android.support:support-annotations:26.0.0-alpha1'
+    implementation 'com.whyn:asmbutterknife-annotations:1.0.0'
 }
 
-
+//run `./gradlew :asmbutterknife-plugin:clean :asmbutterknife-plugin:publish` to publish module
+//using configure below,source code and classes files will be packed into jar files.
 apply plugin: 'maven-publish'
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier "sources"
+    //adding a suffix(the generated jar file end up with sources,such as asmbutterknife.1.0-sources.jar)
+}
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
 //
-            groupId 'com.whyn.plugin'
-            artifactId 'asmbutterknife'
+            groupId 'com.whyn'
+            artifactId 'asmbutterknife-plugin'
             version '1.0.0'
 
             from components.java

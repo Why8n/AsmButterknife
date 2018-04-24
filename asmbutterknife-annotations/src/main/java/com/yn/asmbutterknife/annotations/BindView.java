@@ -1,4 +1,4 @@
-package com.yn.annotations;
+package com.yn.asmbutterknife.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

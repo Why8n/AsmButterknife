@@ -1,8 +1,8 @@
 package com.yn.sample.cr;
 
 
-import com.yn.annotations.BindView;
-import com.yn.annotations.ViewInject;
+import com.yn.asmbutterknife.annotations.BindView;
+import com.yn.asmbutterknife.annotations.ViewInject;
 
 import org.objectweb.asm.ClassReader;
 
@@ -10,7 +10,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-@ViewInject
 public class AsmDemo {
     private String before;
 

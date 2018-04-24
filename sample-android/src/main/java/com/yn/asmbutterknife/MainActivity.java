@@ -11,15 +11,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.yn.annotations.BindView;
-import com.yn.annotations.ViewInject;
-import com.yn.annotations.OnClick;
 import com.yn.asmbutterknife.adapter.RecyclerAdapter;
+import com.yn.asmbutterknife.annotations.BindView;
+import com.yn.asmbutterknife.annotations.OnClick;
+import com.yn.asmbutterknife.annotations.ViewInject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@ViewInject
 public class MainActivity extends AppCompatActivity {
 
     private Button btn;
@@ -31,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
+    @ViewInject(ViewInject.ACTIVITY)
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
