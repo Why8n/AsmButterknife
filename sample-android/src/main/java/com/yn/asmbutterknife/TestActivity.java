@@ -21,8 +21,13 @@ public class TestActivity extends AppCompatActivity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        injectView();
 //        this.tv = findViewById(R.id.tv);
 //        this.rc = findViewById(R.id.rc);
-        String lookBeforeInClassFileSeeWhatHasInjected = "TestActivity.class";
+//        String lookBeforeInClassFileSeeWhatHasInjected = "TestActivity.class";
+    }
+
+    private void injectView() {
+        rc = this.findViewById(R.id.rc);
     }
 }

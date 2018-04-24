@@ -1,41 +1,39 @@
 package com.whyn.asm.adapters.inject;
 
 import com.android.annotations.NonNull;
-import com.whyn.utils.bean.Tuple;
 import com.whyn.bean.ViewInjectClassRecorder;
 import com.whyn.bean.element.AnnotationBean;
 import com.whyn.bean.element.FieldBean;
 import com.whyn.bean.element.MethodBean;
-import com.whyn.define.Const;
 import com.whyn.utils.Log;
+import com.whyn.utils.bean.Tuple;
+import com.yn.asmbutterknife.annotations.ViewInject;
 
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.AdviceAdapter;
 
 import java.util.List;
 
-public class InjectNormalMethodAdapter extends MethodViewInjection {
+public class InjectViewHolderMethodAdapter extends MethodViewInjection {
 
+    private MethodBean mInjectMethodDetail;
+    private AnnotationBean mInjectAnnotationDetail;
 
-    private MethodBean mMethodDetail;
-    private AnnotationBean mAnnotationDetail;
-
-    protected InjectNormalMethodAdapter(MethodVisitor mv, int access, String name, String desc, int viewInjectType,
-                                        @NonNull Tuple<MethodBean, AnnotationBean> viewInjectDeatil) {
+    protected InjectViewHolderMethodAdapter(MethodVisitor mv, int access, String name, String desc, int viewInjectType,
+                                            @NonNull Tuple<MethodBean, AnnotationBean> viewInjectDeatil) {
         super(mv, access, name, desc, viewInjectType);
-        this.mMethodDetail = viewInjectDeatil.first;
-        this.mAnnotationDetail = viewInjectDeatil.second;
+        this.mInjectMethodDetail = viewInjectDeatil.first;
+        this.mInjectAnnotationDetail = viewInjectDeatil.second;
     }
 
     @Override
     protected String dstInjectMethodName() {
-        return this.mMethodDetail.methodName;
+        return this.mInjectMethodDetail.methodName;
     }
 
     @Override
     protected String dstInjectMethodDesc() {
-        return this.mMethodDetail.methodDesc;
+        return this.mInjectMethodDetail.methodDesc;
     }
 
     @Override
@@ -53,8 +51,7 @@ public class InjectNormalMethodAdapter extends MethodViewInjection {
 
     private void injectFindViewById(FieldBean field, AnnotationBean annotation) {
         Integer id = (Integer) annotation.getValue();
-        Log.v("normal--> injectFindViewById: id=%d", id);
-        if (id == null || id < 0)
+        if (id == null || id.intValue() < 0)
             return;
         this.mv.visitVarInsn(ALOAD, 0);
         this.mv.visitVarInsn(ALOAD, 1);
@@ -62,7 +59,13 @@ public class InjectNormalMethodAdapter extends MethodViewInjection {
 //        this.mv.visitMethodInsn(INVOKEVIRTUAL, "android/view/View", "findViewById", "(I)Landroid/view/View;", false);
 //        this.mv.visitTypeInsn(CHECKCAST, "android/widget/TextView");
 //        this.mv.visitFieldInsn(PUTFIELD, "com/yn/asmbutterknife/adapter/RecyclerAdapter$ViewHolder", "tv", "Landroid/widget/TextView;");
-        this.mv.visitMethodInsn(INVOKEVIRTUAL, "android/view/View", "findViewById", "(I)Landroid/view/View;", false);
+        Type[] args = this.mInjectMethodDetail.getArgument();
+        if (args == null || args.length <= 0)
+            throw new IllegalArgumentException(String.format("%s.%s() method must take a View type as it's first parameter",
+                    Type.getObjectType(ViewInjectClassRecorder.getInstance().getInternalName()).getClassName(), this.mInjectMethodDetail.methodName));
+        //if it is primitive type,NullPointException will occured
+        String owner = args[0].getInternalName();
+        this.mv.visitMethodInsn(INVOKEVIRTUAL, owner, "findViewById", "(I)Landroid/view/View;", false);
         this.mv.visitTypeInsn(CHECKCAST, Type.getType(field.desc).getInternalName());
         this.mv.visitFieldInsn(PUTFIELD,
                 ViewInjectClassRecorder.getInstance().getInternalName(),

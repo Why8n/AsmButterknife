@@ -1,14 +1,14 @@
 package com.whyn.bean.element;
 
-import com.whyn.bean.Tuple;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.android.annotations.NonNull;
 
 public final class ArgumentBean {
-    private List<Tuple<String, String>> args = new ArrayList<>();
 
-    public boolean addArgument(String typeDesc, String name) {
-        return this.args.add(new Tuple<>(typeDesc, name));
+    public final int access;
+    public final String name;
+
+    public ArgumentBean(@NonNull int access, @NonNull String name) {
+        this.access = access;
+        this.name = name;
     }
 }

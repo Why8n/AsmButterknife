@@ -8,5 +8,6 @@ import com.whyn.bean.element.FieldBean;
 public interface IRecordField {
 
     boolean addField(@NonNull FieldBean fieldInfo);
+
     ImmutableSet<FieldBean> getField();
 }

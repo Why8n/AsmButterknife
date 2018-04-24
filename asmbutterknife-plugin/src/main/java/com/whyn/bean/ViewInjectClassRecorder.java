@@ -7,6 +7,7 @@ import com.whyn.bean.element.FieldBean;
 import com.whyn.bean.element.MethodBean;
 import com.whyn.bean.interfaces.IRecordClass;
 import com.whyn.utils.Utils;
+import com.whyn.utils.bean.Tuple;
 import com.yn.asmbutterknife.annotations.BindView;
 import com.yn.asmbutterknife.annotations.ViewInject;
 

@@ -10,6 +10,7 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.TypePath;
 
 public class CollectionClassAdapter extends BaseClassVisitor {
@@ -33,6 +34,7 @@ public class CollectionClassAdapter extends BaseClassVisitor {
         Log.v("CollectionClassAdapter:visitMethod: name=%s,desc=%s", name, desc);
         MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
         MethodBean methodBean = new MethodBean(name, desc);
+        methodBean.recordArguments(Type.getArgumentTypes(desc));
         return new CollectionMethodAdapter(mv, methodBean);
     }
 

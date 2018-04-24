@@ -1,13 +1,11 @@
 package com.whyn.asm.adapters.inject;
 
-import android.support.annotation.NonNull;
-
 import com.whyn.asm.adapters.base.BaseClassVisitor;
-import com.whyn.bean.Tuple;
 import com.whyn.bean.ViewInjectClassRecorder;
 import com.whyn.bean.element.AnnotationBean;
 import com.whyn.bean.element.MethodBean;
 import com.whyn.utils.Log;
+import com.whyn.utils.bean.Tuple;
 import com.yn.asmbutterknife.annotations.ViewInject;
 
 import org.objectweb.asm.ClassVisitor;
@@ -49,32 +47,10 @@ public class ViewInjectClassAdapter extends BaseClassVisitor {
         Tuple<MethodBean, AnnotationBean> viewInjectDetail = ViewInjectClassRecorder.getInstance().getViewInjectDetail();
         if (viewInjectDetail == null)
             return mv;
-        MethodVisitor transMethodVisitor = mv;
         Object value = viewInjectDetail.second.getValue();
         Log.v("filterMethod:ViewInjectType annotationValue=%d", (int) value);
-        switch (value == null ? ViewInject.NONE : (int) value) {
-            case ViewInject.NORMAL:
-                transMethodVisitor = new InjectNormalMethodAdapter(mv, access, methodName,
-                        methodDesc, viewInjectDetail);
-                break;
-            case ViewInject.ACTIVITY:
-                if (checkFitsActivity(methodName, methodDesc))
-                    transMethodVisitor = new InjectActivityMethodAdapter(mv, viewInjectDetail);
-                break;
-            case ViewInject.DIALOG:
-                break;
-            case ViewInject.FRAGMENT:
-                break;
-            case ViewInject.VIEWHOLDER:
-                break;
-            default:
-                break;
-        }
-        return transMethodVisitor;
-    }
-
-    private boolean checkFitsActivity(@NonNull String methodName, @NonNull String methodDesc) {
-        return "onCreate".equals(methodName) && "(Landroid/os/Bundle;)V".equals(methodDesc);
+        return new MethodViewInjectionDelegate().obtainVisitor(mv, access, methodName, methodDesc,
+                (value == null ? ViewInject.NONE : (int) value), viewInjectDetail);
     }
 
     @Override

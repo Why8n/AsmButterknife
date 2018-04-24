@@ -2,7 +2,7 @@ package com.whyn.asm;
 
 import com.whyn.asm.adapters.collect.CollectionClassAdapter;
 import com.whyn.asm.adapters.inject.ViewInjectClassAdapter;
-import com.whyn.bean.Tuple;
+import com.whyn.utils.bean.Tuple;
 import com.whyn.bean.ViewInjectClassRecorder;
 import com.whyn.bean.element.AnnotationBean;
 import com.whyn.bean.element.MethodBean;

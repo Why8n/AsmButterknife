@@ -18,6 +18,6 @@ public class CollectionViewInjectAnnotationAdapter extends BaseCollectionAnnotat
 
     @Override
     Integer defaultValue() {
-        return ViewInject.NORMAL;
+        return ViewInject.VIEWHOLDER;
     }
 }

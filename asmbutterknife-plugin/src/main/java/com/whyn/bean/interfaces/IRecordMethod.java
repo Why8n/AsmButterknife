@@ -8,5 +8,6 @@ import com.whyn.bean.element.MethodBean;
 public interface IRecordMethod {
 
     boolean addMethod(@NonNull MethodBean methodInfo);
+
     ImmutableSet<MethodBean> getMethod();
 }

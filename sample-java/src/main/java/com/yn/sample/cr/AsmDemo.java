@@ -2,7 +2,7 @@ package com.yn.sample.cr;
 
 
 import com.yn.asmbutterknife.annotations.BindView;
-import com.yn.asmbutterknife.annotations.ViewInject;
+import com.yn.asmbutterknife.annotations.Test;
 
 import org.objectweb.asm.ClassReader;
 
@@ -16,6 +16,9 @@ public class AsmDemo {
     public static void main(String[] args) throws IOException {
         ClassReader cr = new ClassReader(AsmDemo.class.getName());
         cr.accept(new AsmClassVisitor(), ClassReader.SKIP_DEBUG);
+    }
+
+    public void testArgument(@Test int a, @Test String b, @Test int[] c) {
     }
 
     class TestInner extends AsmDemo {

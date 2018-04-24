@@ -1,4 +1,4 @@
-package com.whyn.bean;
+package com.whyn.utils.bean;
 
 public class Tuple<A, B> {
     public final A first;

@@ -6,8 +6,6 @@ import com.whyn.bean.interfaces.IRecordAnnotation;
 import java.util.HashSet;
 import java.util.Set;
 
-import groovy.transform.Immutable;
-
 public final class FieldBean implements IRecordAnnotation {
     public final String name;
     public final String desc;
