@@ -7,6 +7,10 @@ import com.whyn.asm.ClassScanner
 import com.whyn.utils.Log
 import org.apache.commons.codec.digest.DigestUtils
 
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+
 public class BindViewTransform extends Transform {
     private static final String TRANSFORM_NAME = BindViewTransform.class.getSimpleName()
 
@@ -35,7 +39,9 @@ public class BindViewTransform extends Transform {
         super.transform(transformInvocation)
         Collection<TransformInput> inputs = transformInvocation.getInputs()
         TransformOutputProvider outputProvider = transformInvocation.getOutputProvider()
+        long start = System.currentTimeMillis()
         handleInputs(inputs, outputProvider)
+        Log.v("consume total time: %d ms", System.currentTimeMillis() - start)
     }
 
     private void handleInputs(Collection<TransformInput> inputs, TransformOutputProvider outputProvider) {
@@ -52,15 +58,14 @@ public class BindViewTransform extends Transform {
 
     private void injectFile(File file) {
         def name = file.name
-        if (name.endsWith(".class") && !name.startsWith("R\$") &&
-                "R.class" != name && "BuildConfig.class" != name) {
-            Log.v("at the most begining to scan file: %s", name)
+        if (name.endsWith(".class")
+                && !name.startsWith("R\$")
+                && "R.class" != name
+                && "BuildConfig.class" != name) {
+            Log.v("start to scan file: %s", name)
             if (new ClassScanner(file).scan().write2File()) {
                 Log.v(String.format("%s: insert byte code successfully", file.getName()))
-            } else {
-                Log.v(String.format("%s: insert byte code failed", file.getName()))
             }
-            Log.v("#####################################")
         }
     }
 
@@ -68,7 +73,6 @@ public class BindViewTransform extends Transform {
         if (directoryInput.file.isDirectory()) {
             println "==== directoryInput.file = " + directoryInput.file
             directoryInput.file.eachFileRecurse { File file ->
-                // ...对目录进行插入字节码
                 injectFile(file)
             }
         }
@@ -80,8 +84,7 @@ public class BindViewTransform extends Transform {
     }
 
     private void handlerJarFile(JarInput jarInput, TransformOutputProvider outputProvider) {
-        println "------=== jarInput.file === " + jarInput.file.getAbsolutePath()
-        File tempFile = null
+//        println "------=== jarInput.file === " + jarInput.file.getAbsolutePath()
         if (jarInput.file.getAbsolutePath().endsWith(".jar")) {
 
         }

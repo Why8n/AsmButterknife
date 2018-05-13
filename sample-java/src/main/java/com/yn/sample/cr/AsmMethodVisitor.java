@@ -6,8 +6,6 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-import sun.rmi.runtime.Log;
-
 public class AsmMethodVisitor extends MethodVisitor {
     private static final String TAG = AsmMethodVisitor.class.getSimpleName();
 

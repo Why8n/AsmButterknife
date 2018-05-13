@@ -1,12 +1,10 @@
 package com.whyn.asm.adapters.inject;
 
-import com.whyn.bean.element.AnnotationBean;
-import com.whyn.bean.element.MethodBean;
 import com.whyn.define.Const;
 import com.whyn.utils.Log;
-import com.whyn.utils.bean.Tuple;
 import com.yn.asmbutterknife.annotations.ViewInject;
 
+import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.commons.AdviceAdapter;
 
@@ -44,9 +42,18 @@ public abstract class MethodViewInjection extends AdviceAdapter {
         }
     }
 
+    private void inject() {
+        injectFindViewById();
+        injectOnClick();
+    }
+
     protected abstract String dstInjectMethodName();
 
     protected abstract String dstInjectMethodDesc();
 
-    protected abstract void inject();
+    protected abstract void injectFindViewById();
+
+    protected abstract void injectOnClick();
+
+
 }

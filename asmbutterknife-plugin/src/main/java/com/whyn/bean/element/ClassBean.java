@@ -1,9 +1,12 @@
 package com.whyn.bean.element;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.whyn.bean.interfaces.IRecordClass;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ClassBean implements IRecordClass {
@@ -11,6 +14,7 @@ public class ClassBean implements IRecordClass {
     private Set<FieldBean> fieldsInfo = new HashSet<>();
     private Set<AnnotationBean> annotationsInfo = new HashSet<>();
     private Set<MethodBean> methodsInfo = new HashSet<>();
+    private List<InnerClassBean> innerClassInfo = new ArrayList<>();
 
     @Override
     public void recordClass(String clsInternalName) {
@@ -53,4 +57,13 @@ public class ClassBean implements IRecordClass {
         return ImmutableSet.copyOf(this.methodsInfo);
     }
 
+    @Override
+    public boolean addInnerClass(InnerClassBean innerClassInfo) {
+        return this.innerClassInfo.add(innerClassInfo);
+    }
+
+    @Override
+    public List<InnerClassBean> getInnerClass() {
+        return ImmutableList.copyOf(this.innerClassInfo);
+    }
 }

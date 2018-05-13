@@ -1,8 +1,10 @@
 package com.whyn.asm.adapters.collect;
 
 import com.whyn.asm.adapters.base.BaseClassVisitor;
-import com.whyn.bean.ViewInjectClassRecorder;
+import com.whyn.asm.ViewInjectAnalyse;
+import com.whyn.asm.ViewInjectClassRecorder;
 import com.whyn.bean.element.FieldBean;
+import com.whyn.bean.element.InnerClassBean;
 import com.whyn.bean.element.MethodBean;
 import com.whyn.utils.Log;
 
@@ -33,8 +35,14 @@ public class CollectionClassAdapter extends BaseClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         Log.v("CollectionClassAdapter:visitMethod: name=%s,desc=%s", name, desc);
         MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
-        MethodBean methodBean = new MethodBean(name, desc);
+        MethodBean methodBean = new MethodBean(name, desc, access);
         methodBean.recordArguments(Type.getArgumentTypes(desc));
+        if (ViewInjectAnalyse.isAccessMethod(access, name, desc)) {
+            Log.v("CollectionClassAdapter:find access method: %s", methodBean);
+            ViewInjectClassRecorder.getInstance().addMethod(methodBean);
+            return mv;
+        }
+        Log.v("CollectionClassAdapter:no");
         return new CollectionMethodAdapter(mv, methodBean);
     }
 
@@ -64,6 +72,7 @@ public class CollectionClassAdapter extends BaseClassVisitor {
     @Override
     public void visitInnerClass(String name, String outerName, String innerName, int access) {
         Log.v("CollectionClassAdapter:visitInnerClass: name=%s,outerName=%s,innerName=%s", name, outerName, innerName);
+        ViewInjectClassRecorder.getInstance().addInnerClass(new InnerClassBean(name, outerName, innerName, access));
     }
 
     @Override

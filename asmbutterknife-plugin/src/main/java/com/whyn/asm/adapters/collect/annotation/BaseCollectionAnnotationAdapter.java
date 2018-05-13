@@ -30,6 +30,7 @@ public abstract class BaseCollectionAnnotationAdapter<T> extends BaseAnnotationV
         Log.v("visitEnd");
         if (this.mIsAnnotatedWithDefaultValue)
             this.mAnnotationBean.addMethdValue("value", this.defaultValue());
+        Log.v("add AnnotationBean: "+this.mAnnotationBean);
     }
 
     public abstract String desc();

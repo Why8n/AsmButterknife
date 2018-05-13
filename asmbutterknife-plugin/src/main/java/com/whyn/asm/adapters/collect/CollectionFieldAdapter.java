@@ -2,10 +2,9 @@ package com.whyn.asm.adapters.collect;
 
 import com.whyn.asm.adapters.base.BaseAnnotationVisitor;
 import com.whyn.asm.adapters.base.BaseFieldVisitor;
-import com.whyn.bean.ViewInjectClassRecorder;
+import com.whyn.asm.ViewInjectClassRecorder;
 import com.whyn.bean.element.AnnotationBean;
 import com.whyn.bean.element.FieldBean;
-import com.whyn.utils.Log;
 import com.yn.asmbutterknife.annotations.BindView;
 
 import org.objectweb.asm.AnnotationVisitor;

@@ -102,6 +102,7 @@ public final class Utils {
             throw new IllegalArgumentException(String.format(errorMsg, args));
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T getProperValue(Object value, T defaultValue) {
         if (value == null)
             value = defaultValue;

@@ -1,17 +1,16 @@
 package com.whyn.asm.adapters.inject;
 
 import com.android.annotations.NonNull;
-import com.whyn.utils.bean.Tuple;
-import com.whyn.bean.ViewInjectClassRecorder;
+import com.whyn.asm.ViewInjectAnalyse;
+import com.whyn.asm.ViewInjectClassRecorder;
 import com.whyn.bean.element.AnnotationBean;
 import com.whyn.bean.element.FieldBean;
 import com.whyn.bean.element.MethodBean;
-import com.whyn.define.Const;
 import com.whyn.utils.Log;
+import com.whyn.utils.bean.Tuple;
 
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.AdviceAdapter;
 
 import java.util.List;
 
@@ -39,12 +38,21 @@ public class InjectNormalMethodAdapter extends MethodViewInjection {
     }
 
     @Override
+    protected void injectFindViewById() {
+
+    }
+
+    @Override
+    protected void injectOnClick() {
+
+    }
+
     protected void inject() {
         injectView();
     }
 
     private void injectView() {
-        List<Tuple<FieldBean, AnnotationBean>> bindViewFields = ViewInjectClassRecorder.getInstance().getBindViewDetail();
+        List<Tuple<FieldBean, AnnotationBean>> bindViewFields = ViewInjectAnalyse.getBindViewDetail();
         Log.v("injectView:size=%d", bindViewFields.size());
         for (Tuple<FieldBean, AnnotationBean> field : bindViewFields) {
             injectFindViewById(field.first, field.second);

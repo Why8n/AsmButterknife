@@ -7,9 +7,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.yn.asmbutterknife.R;
 import com.yn.asmbutterknife.annotations.BindView;
 import com.yn.asmbutterknife.annotations.OnClick;
-import com.yn.asmbutterknife.R;
 import com.yn.asmbutterknife.annotations.ViewInject;
 
 import java.util.List;
@@ -43,12 +43,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         @BindView(R.id.item)
         private TextView tv;
 
-        @ViewInject
+//        @ViewInject
         public ViewHolder(View item) {
             super(item);
+            this.viewinject(item);
             //TODO:: test
 //            this.tv = item.findViewById(R.id.item);
-//            itemView.setOnClickListener(new View.OnClickListener() {
+//            this.tv.setOnClickListener(new View.OnClickListener() {
 //                @Override
 //                public void onClick(View v) {
 //                    ViewHolder.this.onClick();
@@ -56,8 +57,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 //            });
         }
 
-        @OnClick(R.id.itemView)
-        public void onClick() {
+        @ViewInject
+        private void viewinject(View view){
+
+        }
+
+        @OnClick(R.id.item)
+        private void onClick() {
             Toast.makeText(this.tv.getContext(), (String) this.tv.getTag(), Toast.LENGTH_SHORT).show();
         }
 

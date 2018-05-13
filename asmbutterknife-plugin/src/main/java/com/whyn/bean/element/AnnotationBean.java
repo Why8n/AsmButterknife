@@ -28,4 +28,18 @@ public final class AnnotationBean {
         return this.getValue("value");
     }
 
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("@" + this.typeDesc);
+        builder.append("(");
+        for (Map.Entry<String, Object> entry : this.methodValue.entrySet()) {
+            builder.append(entry.getKey() + "=" + entry.getValue());
+            builder.append("\n");
+        }
+        int index = builder.lastIndexOf("\n");
+        return index == -1 ? builder.append(")").toString() :
+                builder.substring(0, builder.lastIndexOf("\n")) + ")";
+    }
 }

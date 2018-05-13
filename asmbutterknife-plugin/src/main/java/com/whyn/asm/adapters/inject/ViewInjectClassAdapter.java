@@ -1,9 +1,13 @@
 package com.whyn.asm.adapters.inject;
 
+import android.support.annotation.NonNull;
+
+import com.whyn.asm.ViewInjectAnalyse;
 import com.whyn.asm.adapters.base.BaseClassVisitor;
-import com.whyn.bean.ViewInjectClassRecorder;
+import com.whyn.asm.ViewInjectClassRecorder;
 import com.whyn.bean.element.AnnotationBean;
 import com.whyn.bean.element.MethodBean;
+import com.whyn.utils.AsmUtils;
 import com.whyn.utils.Log;
 import com.whyn.utils.bean.Tuple;
 import com.yn.asmbutterknife.annotations.ViewInject;
@@ -11,6 +15,9 @@ import com.yn.asmbutterknife.annotations.ViewInject;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+
+import java.util.List;
 
 public class ViewInjectClassAdapter extends BaseClassVisitor {
     public ViewInjectClassAdapter(ClassVisitor cv) {
@@ -44,18 +51,40 @@ public class ViewInjectClassAdapter extends BaseClassVisitor {
     }
 
     private MethodVisitor filterMethod(MethodVisitor mv, int access, String methodName, String methodDesc) {
-        Tuple<MethodBean, AnnotationBean> viewInjectDetail = ViewInjectClassRecorder.getInstance().getViewInjectDetail();
+        Tuple<MethodBean, AnnotationBean> viewInjectDetail = ViewInjectAnalyse.getViewInjectDetail();
         if (viewInjectDetail == null)
             return mv;
         Object value = viewInjectDetail.second.getValue();
         Log.v("filterMethod:ViewInjectType annotationValue=%d", (int) value);
-        return new MethodViewInjectionDelegate().obtainVisitor(mv, access, methodName, methodDesc,
+        return MethodViewInjectionDelegate.obtainVisitor(mv, access, methodName, methodDesc,
                 (value == null ? ViewInject.NONE : (int) value), viewInjectDetail);
     }
 
     @Override
     public void visitEnd() {
+        int order = injectOnClick(ViewInjectAnalyse.howManyAccessMethod());
+//        order = injectOnItemClick(order);
         super.visitEnd();
         Log.v("ViewInjectClassAdapter:visitEnd");
+    }
+
+    private int injectOnClick(int order) {
+        List<Tuple<MethodBean, AnnotationBean>> onClickDetail = ViewInjectAnalyse.getOnClickDetail();
+        Log.v("original access method num: %d,onClickSize; %d", order, onClickDetail.size());
+        for (Tuple<MethodBean, AnnotationBean> onClick : onClickDetail) {
+            MethodBean method = onClick.first;
+            if (method != null && (method.access & Opcodes.ACC_PRIVATE) != 0) {
+                injectOnClick4PrivateMethod(this.cv, order++,
+                        ViewInjectClassRecorder.getInstance().getInternalName(),
+                        method);
+            }
+        }
+        return order;
+    }
+
+    //inject access$xx method for View.OnClickListener(){} anonymous inner class to visit outer
+    private void injectOnClick4PrivateMethod(@NonNull ClassVisitor cv, int order,
+                                             String outerClsInternalName, MethodBean methodDetail) {
+        AsmUtils.injectMethodAccess(cv, order, outerClsInternalName, methodDetail);
     }
 }

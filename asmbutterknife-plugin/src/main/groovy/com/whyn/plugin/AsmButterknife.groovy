@@ -3,7 +3,7 @@ package com.whyn.plugin
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import org.gradle.api.Plugin
-import org.gradle.api.Project;
+import org.gradle.api.Project
 
 
 public class AsmButterknife implements Plugin<Project> {
@@ -11,9 +11,10 @@ public class AsmButterknife implements Plugin<Project> {
     void apply(Project project) {
         def android = project.extensions.getByType(AppExtension)
         registerTransform(android)
+//        print JavaVersion.current()
     }
 
-    private void registerTransform(BaseExtension android){
+    private void registerTransform(BaseExtension android) {
         android.registerTransform(new BindViewTransform())
     }
 }
