@@ -159,7 +159,8 @@ public final class AsmUtils implements Opcodes {
         for (Tuple<MethodBean, AnnotationBean> onClick : onClickDetail) {
             MethodBean method = onClick.first;
             if (method != null && (method.access & Opcodes.ACC_PRIVATE) != 0) {
-                methodAccessMap.put(method, String.format("access$%03d", order++));
+                methodAccessMap.put(method, String.format("access$%03d", order * 100));
+                ++order;
             }
         }
 
