@@ -19,8 +19,8 @@ public class CollectionClassAdapter extends BaseClassVisitor {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        Log.v("collect class: %s", name);
-        ViewInjectClassRecorder.getInstance().recordClass(name);
+        Log.v("collect class: %s,version=%d", name,version);
+        ViewInjectClassRecorder.getInstance().recordClass(version, name);
     }
 
     @Override

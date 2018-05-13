@@ -56,9 +56,14 @@ public class ViewInjectClassRecorder implements IRecordClass {
     }
 
     @Override
-    public void recordClass(String clsName) {
+    public void recordClass(int version, String clsName) {
         this.mClassBean = new ClassBean();
-        this.mClassBean.recordClass(clsName);
+        this.mClassBean.recordClass(version, clsName);
+    }
+
+    @Override
+    public int getVersion() {
+        return this.mClassBean.getVersion();
     }
 
     @Override
@@ -114,7 +119,7 @@ public class ViewInjectClassRecorder implements IRecordClass {
                 ViewInjectClassRecorder.class.getSimpleName());
     }
 
-     Tuple<MethodBean, AnnotationBean> getViewInjectDetail() {
+    Tuple<MethodBean, AnnotationBean> getViewInjectDetail() {
         if (this.mViewInjectDetail != null)
             return this.mViewInjectDetail;
         for (MethodBean methodBean : this.getMethod()) {
@@ -127,7 +132,7 @@ public class ViewInjectClassRecorder implements IRecordClass {
         return null;
     }
 
-     List<Tuple<FieldBean, AnnotationBean>> getBindViewDetail() {
+    List<Tuple<FieldBean, AnnotationBean>> getBindViewDetail() {
         if (this.mBindViewDetail == null) {
             this.mBindViewDetail = new ArrayList<>();
             for (FieldBean fieldBean : this.getField()) {

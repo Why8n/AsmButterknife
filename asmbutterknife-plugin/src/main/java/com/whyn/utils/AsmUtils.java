@@ -221,7 +221,7 @@ public final class AsmUtils implements Opcodes {
         String innerClsInternalName = String.format("%s$%d", owner, innerClassNum);
         String ownerDesc = Type.getObjectType(owner).getDescriptor();
 
-        cw.visit(V1_7, ACC_SUPER, innerClsInternalName, null, "java/lang/Object", new String[]{"android/view/View$OnClickListener"});
+        cw.visit(ViewInjectAnalyse.version(), ACC_SUPER, innerClsInternalName, null, "java/lang/Object", new String[]{"android/view/View$OnClickListener"});
 
 //        cw.visitOuterClass(owner, "onCreate", "(Landroid/os/Bundle;)V");
 //        cw.visitInnerClass(innerClsInternalName, null, null, 0);

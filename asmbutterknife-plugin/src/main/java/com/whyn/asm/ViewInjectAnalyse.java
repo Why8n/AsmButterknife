@@ -73,4 +73,8 @@ public final class ViewInjectAnalyse {
     public static List<InnerClassBean> getInnerClass() {
         return ViewInjectClassRecorder.getInstance().getInnerClass();
     }
+
+    public static int version(){
+        return ViewInjectClassRecorder.getInstance().getVersion();
+    }
 }

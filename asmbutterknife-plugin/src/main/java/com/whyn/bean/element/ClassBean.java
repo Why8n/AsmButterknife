@@ -9,7 +9,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.objectweb.asm.Opcodes.V1_7;
+
 public class ClassBean implements IRecordClass {
+    private int version = V1_7;
     private String interanlName;
     private Set<FieldBean> fieldsInfo = new HashSet<>();
     private Set<AnnotationBean> annotationsInfo = new HashSet<>();
@@ -17,8 +20,13 @@ public class ClassBean implements IRecordClass {
     private List<InnerClassBean> innerClassInfo = new ArrayList<>();
 
     @Override
-    public void recordClass(String clsInternalName) {
+    public void recordClass(int version,String clsInternalName) {
         this.interanlName = clsInternalName;
+    }
+
+    @Override
+    public int getVersion() {
+        return this.version;
     }
 
     @Override
