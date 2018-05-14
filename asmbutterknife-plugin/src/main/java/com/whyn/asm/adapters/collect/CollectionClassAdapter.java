@@ -1,8 +1,8 @@
 package com.whyn.asm.adapters.collect;
 
-import com.whyn.asm.adapters.base.BaseClassVisitor;
 import com.whyn.asm.ViewInjectAnalyse;
 import com.whyn.asm.ViewInjectClassRecorder;
+import com.whyn.asm.adapters.base.BaseClassVisitor;
 import com.whyn.bean.element.FieldBean;
 import com.whyn.bean.element.InnerClassBean;
 import com.whyn.bean.element.MethodBean;
@@ -42,7 +42,6 @@ public class CollectionClassAdapter extends BaseClassVisitor {
             ViewInjectClassRecorder.getInstance().addMethod(methodBean);
             return mv;
         }
-        Log.v("CollectionClassAdapter:no");
         return new CollectionMethodAdapter(mv, methodBean);
     }
 

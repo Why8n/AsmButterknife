@@ -1,5 +1,6 @@
 package com.whyn.asm.adapters.collect;
 
+import com.whyn.asm.ViewInjectAnalyse;
 import com.whyn.asm.adapters.base.BaseMethodVisitor;
 import com.whyn.asm.adapters.collect.annotation.CollectionAnnotationDelegateAdapter;
 import com.whyn.asm.ViewInjectClassRecorder;
@@ -37,7 +38,9 @@ public class CollectionMethodAdapter extends BaseMethodVisitor {
             if (AsmUtils.isStatic(this.mMethodBean.access)) {
                 String annotation = Type.getType(desc).getClassName();
                 annotation = annotation.substring(annotation.lastIndexOf(".") + 1);
-                throw new IllegalStateException(String.format("method with @%s must not be static", annotation));
+                throw new IllegalStateException(String.format("%s.%s() method with @%s must not be static",
+                        Type.getObjectType(ViewInjectClassRecorder.getInstance().getInternalName()).getClassName(),
+                        this.mMethodBean.methodName, annotation));
             }
             Log.v("add methodBean: %s", this.mMethodBean);
             ViewInjectClassRecorder.getInstance().addMethod(this.mMethodBean);

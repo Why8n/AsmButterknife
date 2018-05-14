@@ -19,6 +19,11 @@ import org.objectweb.asm.Opcodes;
 
 import java.util.List;
 
+import static org.objectweb.asm.Opcodes.ACC_ABSTRACT;
+import static org.objectweb.asm.Opcodes.ACC_INTERFACE;
+import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
+import static org.objectweb.asm.Opcodes.ACC_STATIC;
+
 public class ViewInjectClassAdapter extends BaseClassVisitor {
     public ViewInjectClassAdapter(ClassVisitor cv) {
         super(cv);
@@ -62,15 +67,44 @@ public class ViewInjectClassAdapter extends BaseClassVisitor {
 
     @Override
     public void visitEnd() {
-        int order = injectOnClick(ViewInjectAnalyse.howManyAccessMethod());
-//        order = injectOnItemClick(order);
+        injectInnerClass();
+        injectAccessMethod();
         super.visitEnd();
         Log.v("ViewInjectClassAdapter:visitEnd");
     }
 
+    private void injectInnerClass() {
+        injectAnonymousCls4OnClick();
+    }
+
+    private void injectAnonymousCls4OnClick() {
+        List<Tuple<MethodBean, AnnotationBean>> onClickDetail = ViewInjectAnalyse.getOnClickDetail();
+        String owner = ViewInjectClassRecorder.getInstance().getInternalName();
+        boolean needInjectOnClickListener = false;
+        long innerAnonymousClsCount = ViewInjectAnalyse.howManyAnonymousInnerClass();
+        for (Tuple<MethodBean, AnnotationBean> onClick : onClickDetail) {
+            int[] ids = (int[]) onClick.second.getValue();
+            for (int i = 0; i < ids.length; ++i) {
+                needInjectOnClickListener = true;
+                this.cv.visitInnerClass(String.format("%s$%d", owner, ++innerAnonymousClsCount), null, null, 0);
+            }
+        }
+        if (needInjectOnClickListener) {
+            this.cv.visitInnerClass("android/view/View$OnClickListener",
+                    "android/view/View",
+                    "OnClickListener",
+                    ACC_PUBLIC + ACC_STATIC + ACC_ABSTRACT + ACC_INTERFACE);
+        }
+    }
+
+
+    private void injectAccessMethod() {
+        int order = injectOnClick(ViewInjectAnalyse.howManyAccessMethod());
+//        order = injectOnItemClick(order);
+    }
+
     private int injectOnClick(int order) {
         List<Tuple<MethodBean, AnnotationBean>> onClickDetail = ViewInjectAnalyse.getOnClickDetail();
-        Log.v("original access method num: %d,onClickSize; %d", order, onClickDetail.size());
         for (Tuple<MethodBean, AnnotationBean> onClick : onClickDetail) {
             MethodBean method = onClick.first;
             if (method != null && (method.access & Opcodes.ACC_PRIVATE) != 0) {

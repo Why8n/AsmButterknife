@@ -99,7 +99,7 @@ public final class Utils {
 
     public static void checkNotNull(final Object target, String errorMsg, Object... args) {
         if (target == null)
-            throw new IllegalArgumentException(String.format(errorMsg, args));
+            throw new RuntimeException(String.format(errorMsg, args));
     }
 
     @SuppressWarnings("unchecked")

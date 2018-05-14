@@ -122,14 +122,21 @@ public class ViewInjectClassRecorder implements IRecordClass {
     Tuple<MethodBean, AnnotationBean> getViewInjectDetail() {
         if (this.mViewInjectDetail != null)
             return this.mViewInjectDetail;
+        Tuple<MethodBean, AnnotationBean> viewInject = null;
         for (MethodBean methodBean : this.getMethod()) {
             for (AnnotationBean annotation : methodBean.getAnnotation()) {
                 if (Type.getDescriptor(ViewInject.class).equals(annotation.typeDesc)) {
-                    return this.mViewInjectDetail = new Tuple<>(methodBean, annotation);
+                    if (viewInject != null) {
+                        throw new IllegalStateException(String.format("%s owns multi @%s annoation,please remove extra @%s annotation",
+                                Type.getObjectType(this.getInternalName()).getClassName(),
+                                ViewInject.class.getSimpleName(),
+                                ViewInject.class.getSimpleName()));
+                    }
+                    viewInject = new Tuple<>(methodBean, annotation);
                 }
             }
         }
-        return null;
+        return this.mViewInjectDetail = viewInject;
     }
 
     List<Tuple<FieldBean, AnnotationBean>> getBindViewDetail() {
