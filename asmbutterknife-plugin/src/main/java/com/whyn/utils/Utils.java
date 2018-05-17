@@ -44,26 +44,10 @@ public final class Utils {
         }
     }
 
-    public static byte[] file2bytes(FileInputStream input) throws IOException {
+    public static byte[] file2bytes(@NonNull FileInputStream input) throws IOException {
         return IOUtils.toByteArray(input);
     }
 
-    @Deprecated
-    public static byte[] file2bytes(File file) {
-        byte[] bytes = null;
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(file);
-            bytes = new byte[fis.available()];
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            close(fis);
-        }
-        return bytes;
-    }
 
     public static boolean isSubType(@NonNull Class<?> srcTypeCls, @NonNull String dstType) throws ClassNotFoundException {
         boolean bRet = false;

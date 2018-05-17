@@ -32,6 +32,11 @@ public abstract class MethodViewInjection extends AdviceAdapter {
     }
 
     @Override
+    public void visitMaxs(int maxStack, int maxLocals) {
+        super.visitMaxs(maxStack, maxLocals);
+    }
+
+    @Override
     protected void onMethodEnter() {
         Log.v("onMethodEnter");
         super.onMethodEnter();

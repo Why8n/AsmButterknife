@@ -4,6 +4,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'org.ow2.asm:asm:6.1.1'
     implementation 'org.ow2.asm:asm-commons:6.1.1'
+    implementation 'org.ow2.asm:asm-util:6.1.1'
     implementation project(':asmbutterknife-annotations')
 }
 
