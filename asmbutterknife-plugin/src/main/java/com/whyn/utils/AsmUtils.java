@@ -68,14 +68,14 @@ public final class AsmUtils implements Opcodes {
     }
 
     public static void injectFindViewById(MethodVisitor mv, String clsInternalName, String findViewMethodOwner) {
-//        String clsInternalName = ViewInjectClassRecorder.getInstance().getInternalName();
         int viewInjectType = ViewInjectAnalyse.getViewInjectType();
         if (viewInjectType == ViewInject.NONE) {
             throw new NoViewInjectException(String.format("%s must annotated with @%s on one specific method",
                     AsmUtils.internal2Class(clsInternalName), ViewInject.class.getSimpleName()));
         }
         List<Tuple<FieldBean, AnnotationBean>> bindViewDetail = ViewInjectAnalyse.getBindViewDetail();
-        Utils.checkNotNull(bindViewDetail, "no @%s detected!", BindView.class.getSimpleName());
+        if (bindViewDetail == null)
+            return;
         for (Tuple<FieldBean, AnnotationBean> detail : bindViewDetail) {
             FieldBean field = detail.first;
             AnnotationBean annotation = detail.second;
@@ -103,11 +103,12 @@ public final class AsmUtils implements Opcodes {
 
     private static FieldBean ifInBindView(int id) {
         List<Tuple<FieldBean, AnnotationBean>> bindViewDetail = ViewInjectAnalyse.getBindViewDetail();
-        Utils.checkNotNull(bindViewDetail, "no @%s detected!", BindView.class.getSimpleName());
-        for (Tuple<FieldBean, AnnotationBean> bindView : bindViewDetail) {
-            AnnotationBean annotation = bindView.second;
-            if (annotation != null && id == (int) annotation.getValue())
-                return bindView.first;
+        if (bindViewDetail != null) {
+            for (Tuple<FieldBean, AnnotationBean> bindView : bindViewDetail) {
+                AnnotationBean annotation = bindView.second;
+                if (annotation != null && id == (int) annotation.getValue())
+                    return bindView.first;
+            }
         }
         return null;
     }
