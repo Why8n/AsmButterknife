@@ -26,7 +26,7 @@ dependencies {
     //transform api
     implementation 'com.android.tools.build:gradle:3.1.1'
 //    implementation project(path: ':asmbutterknife-annotations')
-    implementation 'com.android.support:support-annotations:26.0.0-alpha1'
+    compileOnly 'com.android.support:support-annotations:26.0.0-alpha1'
     implementation 'com.whyn:asmbutterknife-annotations:1.0.0'
 }
 

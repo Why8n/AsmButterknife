@@ -4,7 +4,12 @@
 /.idea
 .DS_Store
 /build
+asmbutterknife-plugin/build/
 /captures
 .externalNativeBuild
  *~ 
- bintray.properties
+bintray.properties
+sample-android/keep
+debug.bat
+noRun.java
+withRun.java

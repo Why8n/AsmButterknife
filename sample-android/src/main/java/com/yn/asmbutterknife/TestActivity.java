@@ -3,31 +3,38 @@ package com.yn.asmbutterknife;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import com.yn.asmbutterknife.annotations.BindView;
+import com.yn.asmbutterknife.annotations.OnClick;
 import com.yn.asmbutterknife.annotations.ViewInject;
 
 public class TestActivity extends AppCompatActivity {
 
-    @BindView(R.id.tv)
-    private TextView tv;
-    @BindView(R.id.rc)
-    private RecyclerView rc;
-
-    @ViewInject(ViewInject.ACTIVITY)
     @Override
+    @ViewInject(ViewInject.ACTIVITY)
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        injectView();
-//        this.tv = findViewById(R.id.tv);
-//        this.rc = findViewById(R.id.rc);
-//        String lookBeforeInClassFileSeeWhatHasInjected = "TestActivity.class";
+        setContentView(R.layout.activity_test);
     }
 
-    private void injectView() {
-        rc = this.findViewById(R.id.rc);
+    @OnClick(R.id.btnPublic)
+    public void publicMehotd() {
+        Toast.makeText(this, "public method", Toast.LENGTH_SHORT).show();
     }
+
+    @OnClick(R.id.btnPackage)
+    void packageMehotd() {
+        Toast.makeText(this, "package method", Toast.LENGTH_SHORT).show();
+    }
+
+    @OnClick(R.id.btnProtected)
+    protected void protectedMehotd() {
+        Toast.makeText(this, "protected method", Toast.LENGTH_SHORT).show();
+    }
+
+    @OnClick(R.id.btnPrivate)
+    private void privateMehotd() {
+        Toast.makeText(this, "private method", Toast.LENGTH_SHORT).show();
+    }
+
 }

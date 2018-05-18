@@ -1,16 +1,12 @@
 package com.whyn.asm.adapters.collect;
 
-import com.whyn.asm.adapters.base.BaseAnnotationVisitor;
 import com.whyn.asm.adapters.base.BaseFieldVisitor;
-import com.whyn.bean.ViewInjectClassRecorder;
+import com.whyn.asm.recorders.interfaces.impl.ViewInjectCollector;
 import com.whyn.bean.element.AnnotationBean;
 import com.whyn.bean.element.FieldBean;
-import com.whyn.utils.Log;
-import com.yn.asmbutterknife.annotations.BindView;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.Type;
 
 public class CollectionFieldAdapter extends BaseFieldVisitor {
     private FieldBean mFieldBean;
@@ -23,27 +19,13 @@ public class CollectionFieldAdapter extends BaseFieldVisitor {
     @Override
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
         AnnotationVisitor av = super.visitAnnotation(desc, visible);
-        if (Type.getDescriptor(BindView.class).equals(desc)) {
-            AnnotationBean bean = new AnnotationBean(desc);
-            this.mFieldBean.addAnnotation(bean);
-            ViewInjectClassRecorder.getInstance().addField(this.mFieldBean);
-            return new CollectionBindViewAnnotationAdapter(av, bean);
-        }
-        return null;
+        AnnotationBean bean = new AnnotationBean(desc);
+        this.mFieldBean.addAnnotation(bean);
+        return new CollectionAnnotationAdapter(av, bean);
     }
 
-    private class CollectionBindViewAnnotationAdapter extends BaseAnnotationVisitor {
-        //        private BindViewBean mBindViewBean = new BindViewBean();
-        private AnnotationBean mAnnotationBean;
-
-        public CollectionBindViewAnnotationAdapter(AnnotationVisitor av, AnnotationBean annotationBean) {
-            super(av);
-            this.mAnnotationBean = annotationBean;
-        }
-
-        @Override
-        public void visit(String name, Object value) {
-            this.mAnnotationBean.addMethdValue(name, value);
-        }
+    @Override
+    public void visitEnd() {
+        ViewInjectCollector.getInstance().visitField(this.mFieldBean);
     }
 }

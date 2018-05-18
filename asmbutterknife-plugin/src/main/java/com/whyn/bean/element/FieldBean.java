@@ -2,6 +2,7 @@ package com.whyn.bean.element;
 
 import com.google.common.collect.ImmutableSet;
 import com.whyn.bean.interfaces.IRecordAnnotation;
+import com.whyn.utils.AsmUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,8 +25,18 @@ public final class FieldBean implements IRecordAnnotation {
     }
 
     @Override
-    public ImmutableSet<AnnotationBean> getAnnotation() {
+    public Set<AnnotationBean> getAnnotation() {
         return ImmutableSet.copyOf(this.annotationsInfo);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (AnnotationBean annotation : this.annotationsInfo) {
+            builder.append(annotation);
+            builder.append("\n");
+        }
+        builder.append(AsmUtils.desc2Class(this.desc) + " " + this.name);
+        return builder.toString();
+    }
 }

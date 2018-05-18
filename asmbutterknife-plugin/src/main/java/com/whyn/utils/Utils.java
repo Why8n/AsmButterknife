@@ -1,14 +1,13 @@
 package com.whyn.utils;
 
 import com.android.annotations.NonNull;
-import com.whyn.define.AndroidType;
 
 import org.apache.commons.io.IOUtils;
-import org.codehaus.groovy.ast.expr.CastExpression;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,14 +15,7 @@ import java.io.OutputStream;
 
 public final class Utils {
     private Utils() {
-    }
-
-    public static void log(String msg) {
-        System.out.println(msg);
-    }
-
-    public static void log(String format, Object... args) {
-        log(String.format(format, args));
+        throw new AssertionError("No instances.");
     }
 
     public static void close(OutputStream os) {
@@ -44,26 +36,27 @@ public final class Utils {
         }
     }
 
-    public static byte[] file2bytes(FileInputStream input) throws IOException {
+    public static byte[] file2bytes(@NonNull FileInputStream input) throws IOException {
         return IOUtils.toByteArray(input);
     }
 
-    @Deprecated
-    public static byte[] file2bytes(File file) {
-        byte[] bytes = null;
-        FileInputStream fis = null;
+    public static boolean write2file(@NonNull File file, byte[] data) {
+        boolean bRet = false;
+        FileOutputStream fos = null;
         try {
-            fis = new FileInputStream(file);
-            bytes = new byte[fis.available()];
+            fos = new FileOutputStream(file);
+            fos.write(data);
+            bRet = true;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            close(fis);
+            Utils.close(fos);
         }
-        return bytes;
+        return bRet;
     }
+
 
     public static boolean isSubType(@NonNull Class<?> srcTypeCls, @NonNull String dstType) throws ClassNotFoundException {
         boolean bRet = false;
@@ -77,31 +70,12 @@ public final class Utils {
         return bRet;
     }
 
-    public static boolean isActivity(@NonNull Class<?> srcTypeCls) {
-        boolean bRet = false;
-        try {
-            bRet = isSubType(srcTypeCls, AndroidType.ACTIVITY_TYPE);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return bRet;
-    }
-
-    public static boolean isView(@NonNull Class<?> type) {
-        boolean bRet = false;
-        try {
-            bRet = isSubType(type, AndroidType.VIEW_TYPE);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return bRet;
-    }
-
     public static void checkNotNull(final Object target, String errorMsg, Object... args) {
         if (target == null)
-            throw new IllegalArgumentException(String.format(errorMsg, args));
+            throw new NullPointerException(String.format(errorMsg, args));
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T getProperValue(Object value, T defaultValue) {
         if (value == null)
             value = defaultValue;

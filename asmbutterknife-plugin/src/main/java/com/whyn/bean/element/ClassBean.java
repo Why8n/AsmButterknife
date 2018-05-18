@@ -1,20 +1,32 @@
 package com.whyn.bean.element;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.whyn.bean.interfaces.IRecordClass;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import static org.objectweb.asm.Opcodes.V1_7;
+
 public class ClassBean implements IRecordClass {
+    private int version = V1_7;
     private String interanlName;
     private Set<FieldBean> fieldsInfo = new HashSet<>();
     private Set<AnnotationBean> annotationsInfo = new HashSet<>();
     private Set<MethodBean> methodsInfo = new HashSet<>();
+    private List<InnerClassBean> innerClassInfo = new ArrayList<>();
 
     @Override
-    public void recordClass(String clsInternalName) {
+    public void recordClass(int version,String clsInternalName) {
         this.interanlName = clsInternalName;
+    }
+
+    @Override
+    public int getVersion() {
+        return this.version;
     }
 
     @Override
@@ -39,18 +51,27 @@ public class ClassBean implements IRecordClass {
     }
 
     @Override
-    public ImmutableSet<FieldBean> getField() {
+    public Set<FieldBean> getField() {
         return ImmutableSet.copyOf(this.fieldsInfo);
     }
 
     @Override
-    public ImmutableSet<AnnotationBean> getAnnotation() {
+    public Set<AnnotationBean> getAnnotation() {
         return ImmutableSet.copyOf(this.annotationsInfo);
     }
 
     @Override
-    public ImmutableSet<MethodBean> getMethod() {
+    public Set<MethodBean> getMethod() {
         return ImmutableSet.copyOf(this.methodsInfo);
     }
 
+    @Override
+    public boolean addInnerClass(InnerClassBean innerClassInfo) {
+        return this.innerClassInfo.add(innerClassInfo);
+    }
+
+    @Override
+    public List<InnerClassBean> getInnerClass() {
+        return ImmutableList.copyOf(this.innerClassInfo);
+    }
 }
