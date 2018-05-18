@@ -5,21 +5,36 @@
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/btn"
+        android:id="@+id/btnPublic"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="button" />
+        android:text="visit public method" />
 
-    <TextView
-        android:id="@+id/tv"
+    <Button
+        android:id="@+id/btnPackage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="Hello ASM" />
+        android:text="visit package method" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rc"
+
+    <Button
+        android:id="@+id/btnProtected"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="visit protected method" />
+
+
+    <Button
+        android:id="@+id/btnPrivate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="visit private method" />
+
+    <fragment
+        android:id="@+id/fragment"
+        android:name="com.yn.asmbutterknife.TestFragment"
+        android:layout_width="match_parent"
+        android:layout_height="80dp" />
+
 
 </LinearLayout>
