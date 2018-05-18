@@ -1,13 +1,15 @@
 package com.whyn.utils;
 
 import com.android.annotations.NonNull;
-import com.whyn.asm.ViewInjectAnalyse;
-import com.whyn.asm.ViewInjectClassRecorder;
+import com.whyn.exceptions.NoViewInjectException;
+import com.whyn.asm.recorders.interfaces.impl.element.ViewInjectAnalyse;
 import com.whyn.bean.element.AnnotationBean;
 import com.whyn.bean.element.FieldBean;
 import com.whyn.bean.element.InnerClassBean;
 import com.whyn.bean.element.MethodBean;
 import com.whyn.utils.bean.Tuple;
+import com.yn.asmbutterknife.annotations.BindView;
+import com.yn.asmbutterknife.annotations.OnClick;
 import com.yn.asmbutterknife.annotations.ViewInject;
 
 import org.objectweb.asm.ClassVisitor;
@@ -27,6 +29,7 @@ import java.util.Map;
 
 public final class AsmUtils implements Opcodes {
     private AsmUtils() {
+        throw new AssertionError("No instances.");
     }
 
     //    for inner class visit outer class field
@@ -60,32 +63,19 @@ public final class AsmUtils implements Opcodes {
         mv.visitEnd();
     }
 
-    //    int ACC_PUBLIC = 0x0001; // class, field, method
-//    int ACC_PRIVATE = 0x0002; // class, field, method
-//    int ACC_PROTECTED = 0x0004; // class, field, method
-//    int ACC_STATIC = 0x0008; // field, method
-//    int ACC_FINAL = 0x0010; // class, field, method, parameter
-//    int ACC_SYNCHRONIZED = 0x0020; // method
-//    int ACC_BRIDGE = 0x0040; // method
-//    int ACC_VARARGS = 0x0080; // method
-//    int ACC_NATIVE = 0x0100; // method
-//    int ACC_ABSTRACT = 0x0400; // class, method
-//    int ACC_STRICT = 0x0800; // method
-//    int ACC_SYNTHETIC = 0x1000; // class, field, method, parameter
     public static boolean isStatic(int access) {
         return (access & Opcodes.ACC_STATIC) != 0;
     }
 
-    public static void injectFindViewById(MethodVisitor mv, String findViewMethodOwner) {
-        String clsInternalName = ViewInjectClassRecorder.getInstance().getInternalName();
-        Tuple<MethodBean, AnnotationBean> viewInjectDetail = ViewInjectAnalyse.getViewInjectDetail();
-        if (viewInjectDetail == null
-                || Utils.<Integer>getProperValue(viewInjectDetail.second.getValue(), ViewInject.NONE).intValue() == ViewInject.NONE) {
-            throw new IllegalStateException(String.format("%s must annotated with @%s on one specific method",
-                    Type.getObjectType(clsInternalName).getClassName(), ViewInject.class.getSimpleName()));
+    public static void injectFindViewById(MethodVisitor mv, String clsInternalName, String findViewMethodOwner) {
+//        String clsInternalName = ViewInjectClassRecorder.getInstance().getInternalName();
+        int viewInjectType = ViewInjectAnalyse.getViewInjectType();
+        if (viewInjectType == ViewInject.NONE) {
+            throw new NoViewInjectException(String.format("%s must annotated with @%s on one specific method",
+                    AsmUtils.internal2Class(clsInternalName), ViewInject.class.getSimpleName()));
         }
-        int viewInjectType = (int) viewInjectDetail.second.getValue();
         List<Tuple<FieldBean, AnnotationBean>> bindViewDetail = ViewInjectAnalyse.getBindViewDetail();
+        Utils.checkNotNull(bindViewDetail, "no @%s detected!", BindView.class.getSimpleName());
         for (Tuple<FieldBean, AnnotationBean> detail : bindViewDetail) {
             FieldBean field = detail.first;
             AnnotationBean annotation = detail.second;
@@ -113,6 +103,7 @@ public final class AsmUtils implements Opcodes {
 
     private static FieldBean ifInBindView(int id) {
         List<Tuple<FieldBean, AnnotationBean>> bindViewDetail = ViewInjectAnalyse.getBindViewDetail();
+        Utils.checkNotNull(bindViewDetail, "no @%s detected!", BindView.class.getSimpleName());
         for (Tuple<FieldBean, AnnotationBean> bindView : bindViewDetail) {
             AnnotationBean annotation = bindView.second;
             if (annotation != null && id == (int) annotation.getValue())
@@ -125,14 +116,15 @@ public final class AsmUtils implements Opcodes {
 //        mv.visitVarInsn(ALOAD, 0);
 //        mv.visitLdcInsn(new Integer(2131165300));
 //        mv.visitMethodInsn(INVOKEVIRTUAL, "com/yn/asmbutterknife/TestActivity", "findViewById", "(I)Landroid/view/View;", false);
-        String owner = ViewInjectClassRecorder.getInstance().getInternalName();
+        String owner = ViewInjectAnalyse.getInternalName();
         boolean isActivity = (ViewInjectAnalyse.getViewInjectType() == ViewInject.ACTIVITY);
         mv.visitVarInsn(ALOAD, isActivity ? 0 : 1);
         mv.visitLdcInsn(new Integer(id));
         String findViewOwnerCls = owner;
         if (!isActivity) {
-            Tuple<MethodBean, AnnotationBean> viewInjectDetail = ViewInjectAnalyse.getViewInjectDetail();
-            findViewOwnerCls = viewInjectDetail.first.getArgument()[0].getInternalName();
+            MethodBean method = ViewInjectAnalyse.getViewInjectMethod();
+            //todo::check args size
+            findViewOwnerCls = method.getArgument()[0].getInternalName();
         }
         mv.visitMethodInsn(INVOKEVIRTUAL, findViewOwnerCls, "findViewById", "(I)Landroid/view/View;", false);
 //        mv.visitTypeInsn(NEW, "com/yn/asmbutterknife/TestActivity$1");
@@ -140,7 +132,7 @@ public final class AsmUtils implements Opcodes {
     }
 
     private static void injectOnClickWithFiledExists(MethodVisitor mv, FieldBean field, long anonymousInnerClsCount) {
-        String owner = ViewInjectClassRecorder.getInstance().getInternalName();
+        String owner = ViewInjectAnalyse.getInternalName();
         mv.visitVarInsn(ALOAD, 0);
 //        mv.visitFieldInsn(GETFIELD, "com/yn/asmbutterknife/TestActivity", "tv", "Landroid/widget/TextView;");
         mv.visitFieldInsn(GETFIELD, owner, field.name, field.desc);
@@ -154,8 +146,10 @@ public final class AsmUtils implements Opcodes {
 
     public static void injectOnClick(MethodVisitor mv) {
         Map<MethodBean, String> methodAccessMap = new HashMap<>();
-        int order = ViewInjectAnalyse.howManyAccessMethod();
+        long order = ViewInjectAnalyse.howManyAccessMethod();
         List<Tuple<MethodBean, AnnotationBean>> onClickDetail = ViewInjectAnalyse.getOnClickDetail();
+        if (onClickDetail == null)
+            return;
         for (Tuple<MethodBean, AnnotationBean> onClick : onClickDetail) {
             MethodBean method = onClick.first;
             if (method != null && (method.access & Opcodes.ACC_PRIVATE) != 0) {
@@ -164,7 +158,7 @@ public final class AsmUtils implements Opcodes {
             }
         }
 
-        String owner = ViewInjectClassRecorder.getInstance().getInternalName();
+        String owner = ViewInjectAnalyse.getInternalName();
         long innerAnonymousClsCount = ViewInjectAnalyse.howManyAnonymousInnerClass();
         for (Tuple<MethodBean, AnnotationBean> onClick : onClickDetail) {
             MethodBean method = onClick.first;
@@ -192,13 +186,7 @@ public final class AsmUtils implements Opcodes {
         }
     }
 
-//    public static void injectFindViewById4Activity(@NonNull MethodVisitor mv, String owner, int id) {
-//        mv.visitVarInsn(ALOAD, 0);
-//        mv.visitLdcInsn(new Integer(id));
-//        mv.visitMethodInsn(INVOKEVIRTUAL, owner, "findViewById", "(I)Landroid/view/View;", false);
-//    }
-
-    public static void injectNewOnClickListener(@NonNull MethodVisitor mv, String owner, long anonymousInnerClassCount) {
+    private static void injectNewOnClickListener(@NonNull MethodVisitor mv, String owner, long anonymousInnerClassCount) {
         String clsInternalName = String.format("%s$%d", owner, anonymousInnerClassCount);
         mv.visitTypeInsn(NEW, clsInternalName);
         mv.visitInsn(DUP);
@@ -210,7 +198,6 @@ public final class AsmUtils implements Opcodes {
         mv.visitMethodInsn(INVOKEVIRTUAL, "android/view/View", "setOnClickListener", "(Landroid/view/View$OnClickListener;)V", false);
     }
 
-    //    public static void createAnonymousInnerClassFile4OnClickListener(long innerClassNum, String owner, String methodName, String methodDesc) {
     public static void createAnonymousInnerClassFile4OnClickListener(long innerClassNum,
                                                                      String owner,
                                                                      String methodName,
@@ -226,14 +213,16 @@ public final class AsmUtils implements Opcodes {
 
 //        cw.visitOuterClass(owner, "onCreate", "(Landroid/os/Bundle;)V");
 //        cw.visitInnerClass(innerClsInternalName, null, null, 0);
-        Tuple<MethodBean, AnnotationBean> viewInjectDetail = ViewInjectAnalyse.getViewInjectDetail();
-        cw.visitOuterClass(owner, viewInjectDetail.first.methodName, viewInjectDetail.first.methodDesc);
+        MethodBean viewInectMethod = ViewInjectAnalyse.getViewInjectMethod();
+        cw.visitOuterClass(owner, viewInectMethod.methodName, viewInectMethod.methodDesc);
         List<InnerClassBean> innerClassBeans = ViewInjectAnalyse.getInnerClass();
-        for (InnerClassBean bean : innerClassBeans) {
-            //it means that owner is an innerclass
-            if (owner.equals(bean.clsInternalName)) {
-                cw.visitInnerClass(bean.clsInternalName, bean.outerClsInternalName, bean.innerName, bean.access);
-                break;
+        if (innerClassBeans != null) {
+            for (InnerClassBean bean : innerClassBeans) {
+                //it means that owner is an innerclass
+                if (owner.equals(bean.clsInternalName)) {
+                    cw.visitInnerClass(bean.clsInternalName, bean.outerClsInternalName, bean.innerName, bean.access);
+                    break;
+                }
             }
         }
         cw.visitInnerClass(innerClsInternalName, null, null, 0);
@@ -268,20 +257,60 @@ public final class AsmUtils implements Opcodes {
         }
         cw.visitEnd();
         byte[] bytes = cw.toByteArray();
-        File originClassFile = ViewInjectClassRecorder.getInstance().getClassFile();
+        File originClassFile = ViewInjectAnalyse.getClassFile();
         String innerClassFileName = innerClsInternalName.substring(innerClsInternalName.lastIndexOf("/") + 1);
         File innerClassFile = new File(originClassFile.getParent(), innerClassFileName + ".class");
-        Log.v("generate class file: %s", innerClassFile.toString());
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(innerClassFile);
-            fos.write(bytes);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            Utils.close(fos);
+        if (Utils.write2file(innerClassFile, bytes)) {
+            Log.v("generate class file successfully: %s", innerClassFile.toString());
+        } else {
+            Log.w("generate class file failed: %s", innerClassFile.toString());
         }
+    }
+
+
+    public static String desc2Class(@NonNull String descriptor) {
+        return Type.getType(descriptor).getClassName();
+    }
+
+    public static String internal2Class(@NonNull String internalName) {
+        return Type.getObjectType(internalName).getClassName();
+    }
+
+    public static String internal2Desc(@NonNull String internalName) {
+        return Type.getObjectType(internalName).getDescriptor();
+    }
+
+    public static String javaVersion(int version) {
+        String javaVersion = "unknown";
+        switch (version) {
+            case Opcodes.V1_1:
+                javaVersion = "Java_1";
+                break;
+            case Opcodes.V1_2:
+                javaVersion = "Java_2";
+                break;
+            case Opcodes.V1_3:
+                javaVersion = "Java_3";
+                break;
+            case Opcodes.V1_4:
+                javaVersion = "Java_4";
+                break;
+            case Opcodes.V1_5:
+                javaVersion = "Java_5";
+                break;
+            case Opcodes.V1_6:
+                javaVersion = "Java_6";
+                break;
+            case Opcodes.V1_7:
+                javaVersion = "Java_7";
+                break;
+            case Opcodes.V1_8:
+                javaVersion = "Java_8";
+                break;
+            default:
+                javaVersion = "over Java_8";
+                break;
+        }
+        return javaVersion;
     }
 }

@@ -1,10 +1,22 @@
 package com.whyn.plugin
 
-import com.android.build.api.transform.*
+import com.android.build.api.transform.DirectoryInput
+import com.android.build.api.transform.JarInput
+import com.android.build.api.transform.Format
+import com.android.build.api.transform.QualifiedContent
+import com.android.build.api.transform.Transform
+import com.android.build.api.transform.TransformException
+import com.android.build.api.transform.TransformInput
+import com.android.build.api.transform.TransformInvocation
+import com.android.build.api.transform.TransformOutputProvider
 import com.android.build.gradle.AppExtension
 import com.whyn.asm.ClassInjector
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import com.android.build.gradle.internal.pipeline.TransformManager
+import org.apache.commons.codec.digest.DigestUtils
+import org.apache.commons.io.FileUtils
+import com.whyn.utils.Log
 
 public class AsmButterknife extends Transform implements Plugin<Project> {
 
@@ -64,7 +76,6 @@ public class AsmButterknife extends Transform implements Plugin<Project> {
                 && !name.startsWith("R\$")
                 && "R.class" != name
                 && "BuildConfig.class" != name) {
-            Log.v("start to scan file: %s", name)
             if (new ClassInjector(file).scan().write2File()) {
                 Log.v(String.format("%s: insert byte code successfully", file.getName()))
             }

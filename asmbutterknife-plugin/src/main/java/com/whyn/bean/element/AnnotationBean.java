@@ -1,15 +1,18 @@
 package com.whyn.bean.element;
 
 import com.android.annotations.NonNull;
+import com.whyn.utils.AsmUtils;
 import com.whyn.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class AnnotationBean {
-    //annotation type descriptor,etc: Lcom/yn/asmbutterknife/annotations/ViewInject;
     public final String typeDesc;
     private Map<String, Object> methodValue = new HashMap<>();
+    private List<AnnotationBean> annotatedAnnotation;
 
     public AnnotationBean(String typeDesc) {
         this.typeDesc = typeDesc;
@@ -28,11 +31,16 @@ public final class AnnotationBean {
         return this.getValue("value");
     }
 
+    public boolean addAnnotatedAnnotation(AnnotationBean bean) {
+        if (this.annotatedAnnotation == null)
+            this.annotatedAnnotation = new ArrayList<>();
+        return this.annotatedAnnotation.add(bean);
+    }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("@" + this.typeDesc);
+        builder.append("@" + AsmUtils.desc2Class(this.typeDesc));
         builder.append("(");
         for (Map.Entry<String, Object> entry : this.methodValue.entrySet()) {
             builder.append(entry.getKey() + "=" + entry.getValue());

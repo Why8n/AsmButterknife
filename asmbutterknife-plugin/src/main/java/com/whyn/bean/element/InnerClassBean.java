@@ -1,5 +1,7 @@
 package com.whyn.bean.element;
 
+import com.whyn.utils.AsmUtils;
+
 public class InnerClassBean {
     public final String clsInternalName;
     public final String outerClsInternalName;
@@ -15,5 +17,10 @@ public class InnerClassBean {
 
     public boolean isAnonymous() {
         return this.innerName == null;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s", AsmUtils.internal2Class(this.clsInternalName));
     }
 }

@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.yn.asmbutterknife.annotations.BindView;
 import com.yn.asmbutterknife.annotations.OnClick;
+import com.yn.asmbutterknife.annotations.ViewInject;
 
 public class TestActivity extends AppCompatActivity {
 
@@ -19,19 +20,24 @@ public class TestActivity extends AppCompatActivity {
     private RecyclerView rc;
 
     public TestActivity() {
-//        new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        };
+        new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        };
     }
 
-//    @ViewInject(ViewInject.ACTIVITY)
+    @ViewInject(ViewInject.VIEWHOLDER)
+    private void viewInject(View view) {
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        View view = this.getWindow().getDecorView();
+        this.viewInject(view);
 
 //        this.tv = findViewById(R.id.tv);
 //        this.rc = findViewById(R.id.rc);
@@ -50,43 +56,43 @@ public class TestActivity extends AppCompatActivity {
                 clickRC();
             }
         });
-//        String lookBeforeInClassFileSeeWhatHasInjected = "TestActivity.class";
+        String lookBeforeInClassFileSeeWhatHasInjected = "TestActivity.class";
     }
 
-//    @OnClick(R.id.tv)
-//    void click() {
-//        Toast.makeText(this, "package method", Toast.LENGTH_SHORT).show();
-//    }
+    @OnClick(R.id.tv)
+    void click() {
+        Toast.makeText(this, "package method", Toast.LENGTH_SHORT).show();
+    }
 
-    @OnClick(R.id.rc)
+    @OnClick(R.id.btn)
     private void clickRC() {
         Toast.makeText(this, "private method", Toast.LENGTH_SHORT).show();
     }
 
-//    private class RunnableFront implements Runnable {
-//        @Override
-//        public void run() {
-//
-//        }
-//    }
-//
-//    private final class AsmButterknife_TestActivity implements View.OnClickListener {
-//        @Override
-//        public void onClick(View v) {
-//            switch (v.getId()) {
-//                case R.id.tv:
-//                    click();
-//                case R.id.rc:
-//                    clickRC();
-//            }
-//        }
-//    }
+    private class RunnableFront implements Runnable {
+        @Override
+        public void run() {
 
-//    private final class RunnableBehind implements Runnable {
-//        @Override
-//        public void run() {
-//
-//        }
-//    }
+        }
+    }
+
+    private final class AsmButterknife_TestActivity implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.tv:
+                    click();
+                case R.id.rc:
+                    clickRC();
+            }
+        }
+    }
+
+    private final class RunnableBehind implements Runnable {
+        @Override
+        public void run() {
+
+        }
+    }
 
 }

@@ -30,7 +30,7 @@ public class MethodBean implements IRecordAnnotation {
     }
 
     @Override
-    public ImmutableSet<AnnotationBean> getAnnotation() {
+    public Set<AnnotationBean> getAnnotation() {
         return ImmutableSet.copyOf(this.annotationsInfo);
     }
 
@@ -46,6 +46,7 @@ public class MethodBean implements IRecordAnnotation {
     @Override
     public int hashCode() {
         int result = 17;
+        result *= 31 + this.access;
         result *= 31 + this.methodName.hashCode();
         result *= 31 + this.methodDesc.hashCode();
         return result;
@@ -62,7 +63,7 @@ public class MethodBean implements IRecordAnnotation {
             MethodBean other = (MethodBean) o;
             bRet = (this.methodName == null ? other.methodName == null : this.methodName.equals(other.methodName)
                     && this.methodDesc == null ? other.methodDesc == null : this.methodDesc.equals(other.methodDesc)
-            );
+                    && this.access == other.access);
         } while (false);
         return bRet;
     }
