@@ -48,7 +48,7 @@ public final class AsmUtils implements Opcodes {
                                           String outerClsInternalName, MethodBean methodDetail) {
         int index = methodDetail.methodDesc.indexOf(")");
         String methodReturnDesc = methodDetail.methodDesc.substring(index + 1);
-        Log.v("injectMethodAccess---------------%s",
+        Log.v("injectAccessMethod: %s",
                 String.format("(%s)%s", Type.getObjectType(outerClsInternalName).getDescriptor(), methodReturnDesc));
         MethodVisitor mv = cv.visitMethod(ACC_STATIC + ACC_SYNTHETIC,
                 String.format("access$%03d", order * 100),
@@ -177,10 +177,8 @@ public final class AsmUtils implements Opcodes {
                         accessMethodName != null);
                 FieldBean field = ifInBindView(id);
                 if (field != null) {
-                    Log.v("injectOnClickWithFiledExists");
                     injectOnClickWithFiledExists(mv, field, innerAnonymousClsCount);
                 } else {
-                    Log.v("injectOnClickAfterFindView");
                     injectOnClickAfterFindView(mv, id, innerAnonymousClsCount);
                 }
             }

@@ -44,7 +44,7 @@ public class OnClickRecorder extends ClassReaderAdapter {
             if (Type.getDescriptor(OnClick.class).equals(annotation.typeDesc)) {
                 if (OnClickRecorder.sOnClickDetails == null)
                     OnClickRecorder.sOnClickDetails = new ArrayList<>();
-                Log.v("%s found: @%s", TAG, bean);
+                Log.v("%s found:\n%s", TAG, bean);
                 OnClickRecorder.sOnClickDetails.add(new Tuple<>(bean, annotation));
                 return;
             }
@@ -108,7 +108,6 @@ public class OnClickRecorder extends ClassReaderAdapter {
 
     @Override
     public void visitEnd(ClassVisitor cv) {
-        Log.v("onClickRecorder:visitEnd");
         injectInnerClass4OnClick(cv);
         injectAccessMethod(cv);
     }
@@ -123,7 +122,6 @@ public class OnClickRecorder extends ClassReaderAdapter {
     }
 
     private void injectAnonymousCls4OnClick(ClassVisitor cv) {
-        Log.v("injectAnonymousClass4OnClick");
         List<Tuple<MethodBean, AnnotationBean>> onClickDetail = ViewInjectAnalyse.getOnClickDetail();
         if (onClickDetail == null)
             return;
@@ -170,7 +168,6 @@ public class OnClickRecorder extends ClassReaderAdapter {
     //    inject access$xx method for View.OnClickListener(){} anonymous inner class to visit outer
     private void injectOnClick4PrivateMethod(@NonNull ClassVisitor cv, int order,
                                              String outerClsInternalName, MethodBean methodDetail) {
-        Log.v("inject accessmethod");
         AsmUtils.injectMethodAccess(cv, order, outerClsInternalName, methodDetail);
     }
 }

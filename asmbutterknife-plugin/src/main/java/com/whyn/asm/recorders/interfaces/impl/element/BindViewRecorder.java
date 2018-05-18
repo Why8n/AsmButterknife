@@ -37,7 +37,7 @@ public class BindViewRecorder extends ClassReaderAdapter {
             if (Type.getDescriptor(BindView.class).equals(annotation.typeDesc)) {
                 if (BindViewRecorder.sBindViews == null)
                     BindViewRecorder.sBindViews = new ArrayList<>();
-                Log.v("%s found: @%s", TAG, bean);
+                Log.v("%s found:\n%s", TAG, bean);
                 BindViewRecorder.sBindViews.add(new Tuple<>(bean, annotation));
                 return;
             }

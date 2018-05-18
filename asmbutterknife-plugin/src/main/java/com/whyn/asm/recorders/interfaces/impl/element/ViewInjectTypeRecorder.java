@@ -39,7 +39,7 @@ public class ViewInjectTypeRecorder extends ClassReaderAdapter {
                 Object value = annotation.getValue();
                 ViewInjectTypeRecorder.sViewInjectType = (value == null ? ViewInjectTypeRecorder.DEFAULT_TYPE : (int) value);
                 ViewInjectTypeRecorder.sViewInjectMethod = bean;
-                Log.v("%s found: %s", TAG, bean);
+                Log.v("%s found:\n%s", TAG, bean);
                 return;
             }
         }
