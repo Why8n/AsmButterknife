@@ -43,11 +43,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         @BindView(R.id.item)
         private TextView tv;
 
-//        @ViewInject
+        @ViewInject
         public ViewHolder(View item) {
             super(item);
-            this.viewinject(item);
-            //TODO:: test
 //            this.tv = item.findViewById(R.id.item);
 //            this.tv.setOnClickListener(new View.OnClickListener() {
 //                @Override
@@ -55,11 +53,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 //                    ViewHolder.this.onClick();
 //                }
 //            });
-        }
-
-        @ViewInject
-        private void viewinject(View view){
-
         }
 
         @OnClick(R.id.item)

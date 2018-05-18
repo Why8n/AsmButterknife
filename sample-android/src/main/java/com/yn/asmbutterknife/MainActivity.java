@@ -24,36 +24,19 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private Button btn;
-    @BindView(R.id.tv)
+//    @BindView(R.id.tv)
     private TextView mTextView;
     private Button bt2n;
     @BindView(R.id.rc)
     private RecyclerView mRecyclerView;
 
-    @ViewInject
-    private void viewinject(View view) {
-
-    }
-
-
     @Override
-//    @ViewInject(ViewInject.ACTIVITY)
+    @ViewInject(ViewInject.ACTIVITY)
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        View view = this.getWindow().getDecorView();
-        this.viewinject(view);
-        //TODO::test
-//        this.mTextView = this.findViewById(R.id.tv);
-//        this.mRecyclerView = this.findViewById(R.id.rc);
-//        this.mTextView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                MainActivity.this.onTextViewClick();
-//            }
-//        });
-
         List<String> datas = initData();
+//        this.mRecyclerView = this.findViewById(R.id.rc);
         this.mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         this.mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         this.mRecyclerView.setAdapter(new RecyclerAdapter(datas));
@@ -76,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
         return datas;
     }
 
-    //TODO::test
     @OnClick(R.id.tv)
     public void onTextViewClick() {
         Toast.makeText(this, "click", Toast.LENGTH_SHORT).show();

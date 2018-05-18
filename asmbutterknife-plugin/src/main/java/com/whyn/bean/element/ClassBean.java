@@ -51,17 +51,17 @@ public class ClassBean implements IRecordClass {
     }
 
     @Override
-    public ImmutableSet<FieldBean> getField() {
+    public Set<FieldBean> getField() {
         return ImmutableSet.copyOf(this.fieldsInfo);
     }
 
     @Override
-    public ImmutableSet<AnnotationBean> getAnnotation() {
+    public Set<AnnotationBean> getAnnotation() {
         return ImmutableSet.copyOf(this.annotationsInfo);
     }
 
     @Override
-    public ImmutableSet<MethodBean> getMethod() {
+    public Set<MethodBean> getMethod() {
         return ImmutableSet.copyOf(this.methodsInfo);
     }
 
