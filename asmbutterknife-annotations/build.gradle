@@ -11,14 +11,14 @@ for (File file : sdkHandler.sdkLoader.repositories) {
 
 dependencies {
 //    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    compileOnly 'com.android.support:support-annotations:26.0.0-alpha1'
-    compileOnly 'com.google.android:android:4.1.1.4'
+    compileOnly deps.support.annotations
+//    compileOnly 'com.google.android:android:4.1.1.4'
 }
 
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
 
-
+//upload to local maven (publishing:publish)
 apply plugin: 'maven-publish'
 
 task sourceJar(type: Jar) {
@@ -30,10 +30,10 @@ task sourceJar(type: Jar) {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-//
-            groupId 'com.whyn'
-            artifactId 'asmbutterknife-annotations'
-            version '1.0.0'
+
+            groupId uploadInfo.groupId
+            artifactId uploadInfo.artifactId_annotations     //compile引用时的第2部分项目名
+            version versions.asmbutterknife_annotations
 
             from components.java
 
@@ -45,8 +45,21 @@ publishing {
     repositories {
         maven {
             // change to point to your repo, e.g. http://my.org/repo
-            url uri('E:/code/Android/repos')
+            url uri("${local_maven_repo_path}")
         }
     }
+}
+
+//upload to jcenter
+apply plugin: 'com.novoda.bintray-release'
+
+publish {
+    userOrg = uploadInfo.userOrg
+    groupId = uploadInfo.groupId         //compile引用时的第1部分groupId
+    artifactId = uploadInfo.artifactId_annotations     //compile引用时的第2部分项目名
+    publishVersion = versions.asmbutterknife_annotations    //compile引用时的第3部分版本号
+    desc = 'annotations for library:AsmButterknife'
+    website = uploadInfo.website
+    uploadName = 'com.yn:asmbutterknife-annotations'
 }
 
