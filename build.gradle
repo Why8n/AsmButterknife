@@ -1,17 +1,58 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    
+    ext.uploadInfo = [
+            'userOrg'               : 'why8n',
+            'groupId'               : 'com.whyn',
+            'artifactId_annotations': 'asmbutterknife-annotations',
+            'artifactId_plugin'     : 'asmbutterknife-plugin',
+            'website'               : 'https://github.com/Why8n/AsmButterknife',
+            'licences'              : ['Apache-2.0'],
+    ]
+    ext.versions = [
+            'asmbutterknife_annotations': '1.0.0',
+            'asmbutterknife_plugin'     : '1.0.0',
+
+            'bintrayRelease'            : '0.8.1',
+
+            'minSdk'                    : 15,
+            'compileSdk'                : 27,
+            'versionCode'               : 1,
+            'versionName'               : '1.0',
+
+            'supportLibrary'            : '27.0.2',
+            'androidPlugin'             : '3.1.1',
+
+            'runner'                    : '1.0.1',
+            'espresso_core'             : '3.0.1',
+
+    ]
+    ext.deps = [
+            android        : [
+                    'gradlePlugin': "com.android.tools.build:gradle:${versions.androidPlugin}",
+            ],
+            'support'      : [
+                    'compat'      : "com.android.support:appcompat-v7:${versions.supportLibrary}",
+                    'annotations' : "com.android.support:support-annotations:${versions.supportLibrary}",
+                    'recyclerview': "com.android.support:recyclerview-v7:${versions.supportLibrary}",
+            ],
+            junit          : 'junit:junit:4.12',
+            runner         : "com.android.support.test:runner:${versions.runner}",
+            'espresso_core': "com.android.support.test.espresso:espresso-core:${versions.espresso_core}",
+    ]
+    ext.local_maven_repo_path = 'E:/code/Android/repos'
+
     repositories {
         google()
         jcenter()
         maven {//local maven repo path
-            url uri('E:/code/Android/repos')
+            url uri(local_maven_repo_path)
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.1'
-        classpath 'com.whyn:asmbutterknife-plugin:1.0.0'
+        classpath "com.android.tools.build:gradle:${versions.androidPlugin}"
+        classpath "com.novoda:bintray-release:${versions.bintrayRelease}"
+        classpath "${uploadInfo.groupId}:${uploadInfo.artifactId_plugin}:${versions.asmbutterknife_plugin}"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -22,6 +63,10 @@ allprojects {
     repositories {
         google()
         jcenter()
+
+        maven {//local maven repo path
+            url uri(local_maven_repo_path)
+        }
     }
 }
 

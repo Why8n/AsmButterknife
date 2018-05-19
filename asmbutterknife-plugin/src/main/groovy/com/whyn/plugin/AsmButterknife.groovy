@@ -24,8 +24,15 @@ public class AsmButterknife extends Transform implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
+        dependencies(project)
         def android = project.extensions.getByType(AppExtension)
         android.registerTransform(this)
+    }
+
+    private void dependencies(Project project) {
+        project.dependencies {
+            implementation 'com.whyn:asmbutterknife-annotations:1.0.0'
+        }
     }
 
     @Override

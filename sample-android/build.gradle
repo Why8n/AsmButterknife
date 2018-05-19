@@ -2,13 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.whyn.plugin.asmbutterknife'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion versions.compileSdk
+
     defaultConfig {
         applicationId "com.yn.asmbutterknife"
-        minSdkVersion 15
-        targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.compileSdk
+        versionCode versions.versionCode
+        versionName versions.versionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -21,10 +22,11 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:27.0.2'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    implementation project(path: ':asmbutterknife-annotations')
-    implementation 'com.android.support:recyclerview-v7:27.0.2'
+
+    implementation deps.support.compat
+    implementation deps.support.recyclerview
+    testImplementation deps.junit
+    androidTestImplementation deps.runner
+    androidTestImplementation deps.espresso_core
+//    implementation project(path: ':asmbutterknife-annotations')
 }
