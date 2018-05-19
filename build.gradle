@@ -11,7 +11,7 @@ buildscript {
     ]
     ext.versions = [
             'asmbutterknife_annotations': '1.0.0',
-            'asmbutterknife_plugin'     : '1.0.0',
+            'asmbutterknife_plugin'     : '1.1.0',
 
             'bintrayRelease'            : '0.8.1',
 
